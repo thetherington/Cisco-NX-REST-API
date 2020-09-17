@@ -1,0 +1,150 @@
+logging server 172.16.112.20 6 port 8514 use-vrf management
+logging source-interface mgmt0
+
+feature netflow
+flow exporter insite
+  description inSITE Server Toms
+  destination 172.16.112.20 use-vrf management
+  transport udp 9996
+  source mgmt0
+  version 9
+flow record insite
+  description IPv4Flow
+  match ipv4 source address
+  match ipv4 destination address
+  match ip protocol
+  match transport destination-port
+  collect transport tcp flags
+  collect counter bytes
+  collect counter packets
+  collect timestamp sys-uptime first
+  collect timestamp sys-uptime last
+  collect ip version
+flow monitor insite
+  description IPv4Monitor
+  record insite
+  exporter insite
+
+interface Ethernet1/1
+  ptp
+  ptp delay-request minimum interval smpte-2059-2 -3
+  ptp announce interval 0
+  ptp sync interval smpte-2059-2 -3
+  ip flow monitor insite input
+  ip address 10.10.101.142/30
+  no ip ospf passive-interface
+  ip router ospf 1 area 0.0.0.0
+  ip pim sparse-mode
+  ip pim passive
+  no shutdown
+
+
+{
+  "ins_api": {
+    "type": "cli_show",
+    "version": "1.0",
+    "sid": "eoc",
+    "outputs": {
+      "output": {
+        "input": "show hardware",
+        "msg": "Success",
+        "code": "200",
+        "body": {
+          "header_str": "Cisco Nexus Operating System (NX-OS) Software\nTAC support: http://www.cisco.com/tac\nCopyright (C) 2002-2019, Cisco and/or its affiliates.\nAll rights reserved.\nThe copyrights to certain works contained in this software are\nowned by other third parties and used and distributed under their own\nlicenses, such as open source.  This software is provided \"as is,\" and unless\notherwise stated, there is no warranty, express or implied, including but not\nlimited to warranties of merchantability and fitness for a particular purpose.\nCertain components of this software are licensed under\nthe GNU General Public License (GPL) version 2.0 or \nGNU General Public License (GPL) version 3.0  or the GNU\nLesser General Public License (LGPL) Version 2.1 or \nLesser General Public License (LGPL) Version 2.0. \nA copy of each such license is available at\nhttp://www.opensource.org/licenses/gpl-2.0.php and\nhttp://opensource.org/licenses/gpl-3.0.html and\nhttp://www.opensource.org/licenses/lgpl-2.1.php and\nhttp://www.gnu.org/licenses/old-licenses/library.txt.\n",
+          "bios_ver_str": "05.39",
+          "kickstart_ver_str": "9.3(3) [build 9.3(2.9)]",
+          "nxos_ver_str": "9.3(3) [build 9.3(2.9)]",
+          "bios_cmpl_time": "08/30/2019",
+          "kick_file_name": "bootflash:///nxos.9.3.2.9.bin",
+          "nxos_file_name": "bootflash:///nxos.9.3.2.9.bin",
+          "kick_cmpl_time": "11/26/2019 9:00:00",
+          "nxos_cmpl_time": "11/26/2019 9:00:00",
+          "kick_tmstmp": "11/27/2019 13:54:40",
+          "nxos_tmstmp": "11/27/2019 13:54:40",
+          "chassis_id": "Nexus9000 C9336C-FX2 Chassis",
+          "cpu_name": "Intel(R) Xeon(R) CPU D-1526 @ 1.80GHz",
+          "memory": 24570292,
+          "mem_type": "kB",
+          "proc_board_id": "FDO2339178D",
+          "host_name": "Spine_RED",
+          "bootflash_size": 115805708,
+          "kern_uptm_days": 1,
+          "kern_uptm_hrs": 0,
+          "kern_uptm_mins": 9,
+          "kern_uptm_secs": 44,
+          "rr_usecs": 450187,
+          "rr_ctime": 1585763895,
+          "rr_reason": "Reset Requested by CLI command reload",
+          "rr_sys_ver": "9.3(3)",
+          "rr_service": "",
+          "plugins": "Core Plugin, Ethernet Plugin",
+          "manufacturer": "Cisco Systems, Inc.",
+          "TABLE_slot": {
+            "ROW_slot": {
+              "TABLE_slot_info": {
+                "ROW_slot_info": [
+                  {
+                    "type": "Nexus9000 C9336C-FX2 Chassis",
+                    "model_num": "N9K-C9336C-FX2",
+                    "hw_ver": "1.0",
+                    "part_num": "73-18766-03",
+                    "part_revision": "D0",
+                    "manuf_date": "Year 2019 Week 39",
+                    "serial_num": "FDO2339178D",
+                    "CLEI_code": "CMMZV00ARC",
+                    "num_slot_str": "0 Module slots"
+                  },
+                  {
+                    "status_ok_empty": "Module1  ok",
+                    "type": "\"36x40/100G QSFP28 Ethernet Module\"",
+                    "num_submods": "0",
+                    "model_num": "N9K-C9336C-FX2",
+                    "hw_ver": "1.0",
+                    "part_num": "73-18766-03",
+                    "part_revision": "D0",
+                    "manuf_date": "Year 2019 Week 39",
+                    "serial_num": "FDO2339178D",
+                    "CLEI_code": "CMMZV00ARC",
+                    "num_slot_str": "2 PowerSupply Slots"
+                  },
+                  {
+                    "status_ok_empty": "PS1 ok",
+                    "type": "1100.00W 220v AC",
+                    "model_num": "NXA-PAC-1100W-PE2",
+                    "hw_ver": "160",
+                    "part_num": "341-1799-01",
+                    "part_revision": "A0",
+                    "manuf_date": "Year 2019 Week 38",
+                    "serial_num": "ART2338F0D3",
+                    "CLEI_code": "CMUPAFMCAA"
+                  },
+                  {
+                    "status_ok_empty": "PS2 fail/shutdown",
+                    "type": "1100.00W 220v AC",
+                    "model_num": "NXA-PAC-1100W-PE2",
+                    "hw_ver": "160",
+                    "part_num": "341-1799-01",
+                    "part_revision": "A0",
+                    "manuf_date": "Year 2019 Week 38",
+                    "serial_num": "ART2338F0RM",
+                    "CLEI_code": "CMUPAFMCAA",
+                    "num_slot_str": "3 Fan slots"
+                  },
+                  {
+                    "status_ok_empty": "Fan1 ok"
+                  },
+                  {
+                    "status_ok_empty": "Fan2 ok"
+                  },
+                  {
+                    "status_ok_empty": "Fan3 ok"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
