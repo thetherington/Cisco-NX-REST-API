@@ -4,7 +4,6 @@ from insite_plugin import InsitePlugin
 
 
 class Plugin(InsitePlugin):
-
     def can_group(self):
         return False
 
@@ -17,19 +16,17 @@ class Plugin(InsitePlugin):
         except Exception:
 
             params = {
-                'user': 'admin',
-                'password': 'Evertz123',
-                'host': hosts[-1],
-                'magnum_cache': {
-                    'insite': '172.16.112.20',
-                    'nature': 'mag-1',
-                    'cluster_ip': '172.17.143.201',
-                    'core_link_prefix': "Ethernet1/",
+                "user": "admin",
+                "password": "Evertz123",
+                "host": hosts[-1],
+                "magnum_cache": {
+                    "insite": "127.0.0.1",
+                    "nature": "mag-1",
+                    "cluster_ip": "172.17.143.201",
+                    "core_link_prefix": "Ethernet1/",
                     #'sub_interfaces': True
                 },
-                'netflow': {
-                    'insite': '172.16.112.20'
-                }
+                "netflow": {"insite": "127.0.0.1"},
             }
 
             self.collector = switch_collector(**params)
