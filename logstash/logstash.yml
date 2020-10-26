@@ -1346,10 +1346,10 @@ output {
   
   if "cisco" in [tags] {
     elasticsearch {
-      hosts => ["172.16.112.20:9200"]
+      hosts => ["127.0.0.1:9200"]
       index => "log-ciscolog-%{+YYYY.MM.dd}"
       document_type => "%{type}"
-      template => "/opt/evertz/insite/parasite/applications/ls-1/elasticsearch-template-ciscolog.json"
+      template => "/opt/mappings/elasticsearch-template-ciscolog.json"
       template_name => "log-ciscolog"
       template_overwrite => true
     }
@@ -1357,9 +1357,9 @@ output {
   
   if "netflow" in [tags] {
     elasticsearch {
-      hosts => [ "172.16.112.20:9200" ]
+      hosts => [ "127.0.0.1:9200" ]
       index => "log-netflow-%{+YYYY.MM.dd}"
-      template => "/opt/evertz/insite/parasite/applications/ls-1/elasticsearch-template-netflow.json"
+      template => "/opt/mappings/elasticsearch-template-netflow.json"
       template_name => "log-netflow"
       template_overwrite => true
     }
