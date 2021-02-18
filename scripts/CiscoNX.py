@@ -362,7 +362,7 @@ class parameters:
                 data=json.dumps(self.payload),
                 headers=self.headers,
                 auth=(self.user, self.password),
-                timeout=3.0,
+                timeout=30.0,
             )
             response.close()
 
