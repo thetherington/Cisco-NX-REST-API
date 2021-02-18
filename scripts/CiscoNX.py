@@ -720,9 +720,13 @@ class mcast_route:
 
         HEADERS = {"Accept": "application/json"}
 
+        PARAMS = {"ignore_unavailable": True}
+
         try:
 
-            resp = requests.get(REQUEST_URL, headers=HEADERS, data=json.dumps(QUERY), timeout=6.0)
+            resp = requests.get(
+                REQUEST_URL, headers=HEADERS, params=PARAMS, data=json.dumps(QUERY), timeout=30.0
+            )
 
             resp.close()
 
