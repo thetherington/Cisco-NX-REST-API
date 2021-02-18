@@ -720,7 +720,7 @@ class mcast_route:
 
         HEADERS = {"Accept": "application/json"}
 
-        PARAMS = {"ignore_unavailable": True}
+        PARAMS = {"ignore_unavailable": "true"}
 
         try:
 
