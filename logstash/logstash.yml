@@ -12,6 +12,7 @@ input {
     }
     type => netflow
     tags => [ "netflow" ]
+    # workers => 20
   }
   
 }
