@@ -229,9 +229,7 @@ class magnum_cache:
                                                 element["ip"]: {
                                                     "signal_descr": element["name"],
                                                     "signal_type": data_name,
-                                                    "signal_group": "Main"
-                                                    if dst == "destination"
-                                                    else "Backup",
+                                                    "signal_group": "Main" if dst == "destination" else "Backup",
                                                 }
                                             }
 
@@ -240,12 +238,7 @@ class magnum_cache:
                                                 for mnemonic in stream["mnemonics"]:
 
                                                     signal[element["ip"]].update(
-                                                        {
-                                                            "interface_"
-                                                            + mnemonic["interface"]: mnemonic[
-                                                                "mnemonic"
-                                                            ]
-                                                        }
+                                                        {"interface_" + mnemonic["interface"]: mnemonic["mnemonic"]}
                                                     )
 
                                             # create a device information dictionary of the edge device having the signal
@@ -278,14 +271,7 @@ class magnum_cache:
         except Exception as e:
 
             with open(self.host, "a+") as f:
-                f.write(
-                    str(datetime.datetime.now())
-                    + " --- "
-                    + "magnum_cache_builder"
-                    + "\t"
-                    + str(e)
-                    + "\r\n"
-                )
+                f.write(str(datetime.datetime.now()) + " --- " + "magnum_cache_builder" + "\t" + str(e) + "\r\n")
 
             return None
 
@@ -336,17 +322,13 @@ class magnum_cache:
             if ("core_link_prefix" in key) and value:
                 self.core_link_prefix = value
 
-        self.cache_url = "http://{}/proxy/insite/{}/api/-/model/magnum/{}".format(
-            self.insite, self.nature, self.cluster_ip
-        )
+        self.cache_url = "http://{}/proxy/insite/{}/api/-/model/magnum/{}".format(self.insite, self.nature, self.cluster_ip)
 
         self.catalog_cache()
 
         if "sub_interfaces" in kwargs.keys():
 
-            kwargs["port_remap"].update(
-                {"cmd": "show interface brief", "logfile": "port_remap_fetch"}
-            )
+            kwargs["port_remap"].update({"cmd": "show interface brief", "logfile": "port_remap_fetch"})
             self.__handlers = parameters(**kwargs["port_remap"])
 
             self.remap_ports()
@@ -374,9 +356,7 @@ class parameters:
         except Exception as e:
 
             with open(self.host, "a+") as f:
-                f.write(
-                    str(datetime.datetime.now()) + " --- " + self.logfile + "\t" + str(e) + "\r\n"
-                )
+                f.write(str(datetime.datetime.now()) + " --- " + self.logfile + "\t" + str(e) + "\r\n")
 
                 # with open('cisco_webcall', 'a+') as f:
                 #     f.write(str(datetime.datetime.now()) + " --- " + host + "\t" + response.text + "\r\n")
@@ -542,16 +522,15 @@ class system_resources:
                         fields[Params["prefix"] + param] = fields[Params["prefix"] + param] * 1000
 
                     if Key == "cpu" and "cpu" in param:
-                        fields[Params["prefix"] + param] = round(
-                            fields[Params["prefix"] + param] / 100, 3
-                        )
+                        fields[Params["prefix"] + param] = round(fields[Params["prefix"] + param] / 100, 3)
 
                 if Key == "memory":
                     fields.update({"current_memory_status": body["current_memory_status"]})
                     fields.update(
                         {
                             "d_memory_used_pct": round(
-                                fields["l_memory_usage_used"] / fields["l_memory_usage_total"], 3,
+                                fields["l_memory_usage_used"] / fields["l_memory_usage_total"],
+                                3,
                             )
                         }
                     )
@@ -581,7 +560,11 @@ class system_resources:
                 "type": int,
             },
             "memory": {
-                "list": ["memory_usage_total", "memory_usage_used", "memory_usage_free",],
+                "list": [
+                    "memory_usage_total",
+                    "memory_usage_used",
+                    "memory_usage_free",
+                ],
                 "prefix": "l_",
                 "type": int,
             },
@@ -636,25 +619,12 @@ class env_health:
 
         if body:
 
-            documents.extend(
-                [
-                    doc_create(faninfo, "fan", None)
-                    for faninfo in body["fandetails"]["TABLE_faninfo"]["ROW_faninfo"]
-                ]
-            )
+            documents.extend([doc_create(faninfo, "fan", None) for faninfo in body["fandetails"]["TABLE_faninfo"]["ROW_faninfo"]])
+
+            documents.extend([doc_create(tempinfo, "temp", True, "i_") for tempinfo in body["TABLE_tempinfo"]["ROW_tempinfo"]])
 
             documents.extend(
-                [
-                    doc_create(tempinfo, "temp", True, "i_")
-                    for tempinfo in body["TABLE_tempinfo"]["ROW_tempinfo"]
-                ]
-            )
-
-            documents.extend(
-                [
-                    doc_create(psuinfo, "psu", True, "i_")
-                    for psuinfo in body["powersup"]["TABLE_psinfo"]["ROW_psinfo"]
-                ]
+                [doc_create(psuinfo, "psu", True, "i_") for psuinfo in body["powersup"]["TABLE_psinfo"]["ROW_psinfo"]]
             )
 
         return documents
@@ -724,9 +694,7 @@ class mcast_route:
 
         try:
 
-            resp = requests.get(
-                REQUEST_URL, headers=HEADERS, params=PARAMS, data=json.dumps(QUERY), timeout=30.0
-            )
+            resp = requests.get(REQUEST_URL, headers=HEADERS, params=PARAMS, data=json.dumps(QUERY), timeout=30.0)
 
             resp.close()
 
@@ -742,9 +710,7 @@ class mcast_route:
 
                         for hit in stream["in_bytes"]["hits"]["hits"]:
 
-                            stream_def = {
-                                stream["key"]: {"l_in_bytes": hit["fields"]["netflow.in_bytes"][-1]}
-                            }
+                            stream_def = {stream["key"]: {"l_in_bytes": hit["fields"]["netflow.in_bytes"][-1]}}
 
                             stream_db.update(stream_def)
 
@@ -872,9 +838,7 @@ class hardware_info:
 
             try:
 
-                for count, device in enumerate(
-                    body["TABLE_slot"]["ROW_slot"]["TABLE_slot_info"]["ROW_slot_info"]
-                ):
+                for count, device in enumerate(body["TABLE_slot"]["ROW_slot"]["TABLE_slot_info"]["ROW_slot_info"]):
 
                     if len(device.keys()) > 1:
 
@@ -934,9 +898,7 @@ class hardware_info:
         self.__handlers = parameters(**kwargs)
 
 
-class switch_collector(
-    ports, env_health, system_resources, mcast_route, magnum_cache, hardware_info
-):
+class switch_collector(ports, env_health, system_resources, mcast_route, magnum_cache, hardware_info):
     def process(self, func):
         self.documents.extend(func())
 
