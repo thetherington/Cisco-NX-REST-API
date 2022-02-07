@@ -21,7 +21,7 @@ The metrics collection module has the below distinct abilities and features:
 
 ## Minimum Requirements:
 
-- inSITE Version 10.3 and service pack 6.
+- inSITE Version 11.
 - Imported Magnum SDVN Configuration containing the Cisco NBM devices.
 - Python3.7 (_already installed on inSITE machine_)
 - Python3.7 Requests library (_already installed on inSITE machine_)

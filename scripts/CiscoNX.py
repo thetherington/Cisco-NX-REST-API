@@ -1,6 +1,7 @@
 import copy
 import datetime
 import json
+import urllib.parse
 from threading import Thread
 
 import requests
@@ -87,7 +88,7 @@ class magnum_cache:
             """
 
             # create core linkage db
-            for device in cache["magnum"]["magnum-controlled-devices"]:
+            for device in cache["magnum-controlled-devices"]:
 
                 if device["device"] == "CISCO-NBM":
 
@@ -160,7 +161,7 @@ class magnum_cache:
                             self.link_db[db_key].update(_port)
 
             # go through each edge and link into the spine if there.
-            for device in cache["magnum"]["magnum-controlled-devices"]:
+            for device in cache["magnum-controlled-devices"]:
 
                 if device["device-type"] == "edge":
 
@@ -206,7 +207,7 @@ class magnum_cache:
             # and every stream if possible and add it to the source_db dictionary
             self.source_db = {}
 
-            for device in cache["magnum"]["magnum-controlled-devices"]:
+            for device in cache["magnum-controlled-devices"]:
 
                 try:
 
@@ -264,7 +265,19 @@ class magnum_cache:
 
         try:
 
-            response = requests.get(self.cache_url, verify=False, timeout=6.0)
+            login = {"username": "admin", "password": "admin"}
+
+            response = requests.post(
+                "https://%s/api/v1/login" % self.insite,
+                headers={"Content-Type": "application/json"},
+                data=json.dumps(login),
+                verify=False,
+                timeout=30.0,
+            ).json()
+
+            otbt = {"otbt-is": response["otbt-is"]}
+
+            response = requests.get(self.cache_url, params=otbt, verify=False, timeout=30.0)
 
             return json.loads(response.text)
 
@@ -654,8 +667,8 @@ class mcast_route:
             "query": {
                 "bool": {
                     "must": [
-                        {"match_phrase": {"host": {"query": self.__handlers.host}}},
-                        {"match_phrase": {"netflow.l4_dst_port": {"query": 1234}}},
+                        {"match_phrase": {"host.ip": self.__handlers.host}},
+                        {"match_phrase": {"netflow.l4_dst_port": 1234}},
                         {"range": {"@timestamp": {"from": "now-5m", "to": "now"}}},
                     ]
                 }
@@ -663,7 +676,7 @@ class mcast_route:
             "aggs": {
                 "address": {
                     "terms": {
-                        "field": "netflow.ipv4_dst_addr.keyword",
+                        "field": "netflow.ipv4_dst_addr",
                         "size": 100000,
                         "order": {"_term": "desc"},
                     },
@@ -685,10 +698,10 @@ class mcast_route:
             self.__proto,
             self.__elastichost,
             self.__elasticport,
-            self.__index,
+            urllib.parse.quote(self.__index, safe=""),
         )
 
-        HEADERS = {"Accept": "application/json"}
+        HEADERS = {"Content-Type": "application/json"}
 
         PARAMS = {"ignore_unavailable": "true"}
 
@@ -702,7 +715,7 @@ class mcast_route:
 
             stream_db = {}
 
-            if response["hits"]["total"] > 0:
+            if response["hits"]["total"]["value"] > 0:
 
                 for stream in response["aggregations"]["address"]["buckets"]:
 
@@ -824,7 +837,7 @@ class mcast_route:
             self.__proto = "http"
             self.__elasticport = "9200"
             self.__elastichost = kwargs["netflow"]["insite"]
-            self.__index = "log-netflow-*"
+            self.__index = "<log-netflow-{now/d}>,<log-netflow-{now/d-1d}>"
 
 
 class hardware_info:
@@ -949,10 +962,10 @@ class switch_collector(ports, env_health, system_resources, mcast_route, magnum_
         # self.func_list = [self.mroute_fetch]
         self.func_list = [
             self.ports_fetch,
-            self.mroute_fetch,
-            self.resource_fetch,
-            self.env_fetch,
-            self.hardware_fetch,
+            # self.mroute_fetch,
+            # self.resource_fetch,
+            # self.env_fetch,
+            # self.hardware_fetch,
         ]
 
         self.documents = []
